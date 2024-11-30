@@ -9,13 +9,18 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+var COMMAND_ALL_PREFIXES = [...]string{"@all", "/all"}
+
 func (b *Bot) HandleUpdate(update tgbotapi.Update) {
-	if strings.HasPrefix(update.Message.Text, "@all") || strings.HasPrefix(update.Message.Text, "/all") {
-		b.handleAllCommand(update)
+	for _, prefix := range COMMAND_ALL_PREFIXES {
+		if strings.HasPrefix(update.Message.Text, prefix) {
+			b.handleAllCommand(strings.TrimSpace(strings.TrimPrefix(update.Message.Text, prefix)), update)
+			break
+		}
 	}
 }
 
-func (b *Bot) handleAllCommand(update tgbotapi.Update) {
+func (b *Bot) handleAllCommand(userText string, update tgbotapi.Update) {
 	log := logger.GetLogger()
 
 	admins, err := b.API.GetChatAdministrators(tgbotapi.ChatAdministratorsConfig{ChatConfig: tgbotapi.ChatConfig{ChatID: update.Message.Chat.ID}})
@@ -33,12 +38,28 @@ func (b *Bot) handleAllCommand(update tgbotapi.Update) {
 		}
 	}
 
-	mentionText := fmt.Sprintf("@%s зовет ебашить! \n\n%s %s",
+	var messageToSend string = userText
+	if messageToSend == "" {
+		messageToSend = ListOfMessages[rand.Intn(len(ListOfMessages))]
+	}
+
+	mentionText := fmt.Sprintf("@%s сообщает:\n\n%s",
 		update.Message.From.UserName,
-		strings.Join(mentions, " "),
-		ListOfMessages[rand.Intn(len(ListOfMessages))])
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, mentionText)
-	msg.ParseMode = "Markdown"
+		strings.TrimSpace(strings.Join(
+			[]string{strings.Join(mentions, " "), messageToSend},
+			" ",
+		),
+		),
+	)
+
+	msg := tgbotapi.MessageConfig{
+		BaseChat: tgbotapi.BaseChat{
+			ChatID:           update.Message.Chat.ID,
+			ReplyToMessageID: update.Message.MessageID,
+		},
+		Text:      mentionText,
+		ParseMode: "Markdown",
+	}
 
 	if _, err := b.API.Send(msg); err != nil {
 		log.Printf("Error sending message: %v", err)

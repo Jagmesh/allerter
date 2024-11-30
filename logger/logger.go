@@ -14,6 +14,7 @@ func InitLogger() *logrus.Logger {
 		Formatter: &logrus.TextFormatter{
 			FullTimestamp: true,
 			ForceColors:   true,
+			PadLevelText:  true,
 		},
 		Level: logrus.DebugLevel,
 	}

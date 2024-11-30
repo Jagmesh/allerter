@@ -34,7 +34,8 @@ func (b *Bot) Start() error {
 		if update.Message == nil {
 			continue
 		}
-		go b.HandleUpdate(update) // Обрабатываем каждый апдейт в отдельной горутине
+		go b.HandleUpdate(update)
 	}
+
 	return nil
 }

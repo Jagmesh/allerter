@@ -27,6 +27,8 @@ func main() {
 	if err := myBot.Start(); err != nil {
 		log.Fatalf("Error starting bot: %v", err)
 	}
+
+	log.Warn("ЭТО МЫ В MAIN ПОСЛЕ .START()")
 }
 
 func getBotToken() string {
