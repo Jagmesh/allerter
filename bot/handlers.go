@@ -3,21 +3,33 @@ package bot
 import (
 	"fmt"
 	"math/rand"
+	"regexp"
 	"strings"
 	"tg-alerter/logger"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-var COMMAND_ALL_PREFIXES = [...]string{"@all", "/all"}
-
 func (b *Bot) HandleUpdate(update tgbotapi.Update) {
-	for _, prefix := range COMMAND_ALL_PREFIXES {
-		if strings.HasPrefix(update.Message.Text, prefix) {
-			b.handleAllCommand(strings.TrimSpace(strings.TrimPrefix(update.Message.Text, prefix)), update)
-			break
-		}
+	command, payload := getCommand(strings.ToLower(update.Message.Text))
+	if command == "" {
+		return
 	}
+	logger.GetLogger().Infoln("Command recieved:", command)
+
+	switch command {
+	case COMMAND_ALL_PREFIX:
+		b.handleAllCommand(payload, update)
+	}
+}
+
+func getCommand(input string) (string, string) {
+	re := regexp.MustCompile(`^[/@](\w+)\s*(.*)`)
+	match := re.FindStringSubmatch(input)
+	if len(match) > 2 {
+		return match[1], strings.TrimSpace(match[2])
+	}
+	return "", ""
 }
 
 func (b *Bot) handleAllCommand(userText string, update tgbotapi.Update) {
