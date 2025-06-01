@@ -30,7 +30,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: cr.selcloud.ru/jagmesh-vm/${{ secrets.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          tags: ${{ secrets.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
   deploy:
     needs: build-push
@@ -48,4 +48,4 @@ jobs:
             docker pull ${{ secrets.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             docker stop ${{ secrets.CONTAINER_NAME }} || true
             docker rm ${{ secrets.CONTAINER_NAME }} || true
-            docker run -d --name ${{ secrets.CONTAINER_NAME }} -p 80:8080 ${{ secrets.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            docker run -d --name ${{ secrets.CONTAINER_NAME }} ${{ secrets.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
