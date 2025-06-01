@@ -2,7 +2,6 @@ package bot
 
 import (
 	"fmt"
-	"math/rand"
 	"regexp"
 	"strings"
 	"tg-alerter/logger"
@@ -11,7 +10,7 @@ import (
 )
 
 func (b *Bot) HandleUpdate(update tgbotapi.Update) {
-	command, payload := getCommand(strings.ToLower(update.Message.Text))
+	command, payload := getCommand(update.Message.Text)
 	if command == "" {
 		return
 	}
@@ -27,7 +26,7 @@ func getCommand(input string) (string, string) {
 	re := regexp.MustCompile(`^[/@](\w+)\s*(.*)`)
 	match := re.FindStringSubmatch(input)
 	if len(match) > 2 {
-		return match[1], strings.TrimSpace(match[2])
+		return strings.ToLower(match[1]), strings.TrimSpace(match[2])
 	}
 	return "", ""
 }
@@ -50,18 +49,10 @@ func (b *Bot) handleAllCommand(userText string, update tgbotapi.Update) {
 		}
 	}
 
-	var messageToSend string = userText
-	if messageToSend == "" {
-		messageToSend = ListOfMessages[rand.Intn(len(ListOfMessages))]
-	}
-
-	mentionText := fmt.Sprintf("@%s сообщает:\n\n%s",
+	mentionText := fmt.Sprintf("<blockquote>%s</blockquote>\nсообщает @%s\n\n<i>%s</i>",
+		userText,
 		update.Message.From.UserName,
-		strings.TrimSpace(strings.Join(
-			[]string{strings.Join(mentions, " "), messageToSend},
-			" ",
-		),
-		),
+		strings.TrimSpace(strings.Join(mentions, ", ")),
 	)
 
 	msg := tgbotapi.MessageConfig{
@@ -70,10 +61,17 @@ func (b *Bot) handleAllCommand(userText string, update tgbotapi.Update) {
 			ReplyToMessageID: update.Message.MessageID,
 		},
 		Text:      mentionText,
-		ParseMode: "Markdown",
+		ParseMode: "HTML",
 	}
 
 	if _, err := b.API.Send(msg); err != nil {
 		log.Printf("Error sending message: %v", err)
+		b.API.Send(tgbotapi.MessageConfig{
+			BaseChat: tgbotapi.BaseChat{
+				ChatID:           update.Message.Chat.ID,
+				ReplyToMessageID: update.Message.MessageID,
+			},
+			Text: ERROR_MESSAGE,
+		})
 	}
 }
