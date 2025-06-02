@@ -19,5 +19,4 @@ jobs:
       SERVER_HOST: ${{ secrets.SERVER_HOST }}
       SERVER_USER: ${{ secrets.SERVER_USER }}
       SSH_KEY: ${{ secrets.SSH_KEY }}
-
       ENVARS: ${{ secrets.ENVARS }}
