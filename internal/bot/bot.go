@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"tg-alerter/logger"
+	"tg-alerter/internal/logger"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )

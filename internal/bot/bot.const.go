@@ -1,4 +1,5 @@
 package bot
 
-const COMMAND_ALL_PREFIX string = "all"
+var COMMAND_ALL_PREFIX []string = []string{"all", "ll"}
+
 const ERROR_MESSAGE string = "MACHINE IS BROKEN"

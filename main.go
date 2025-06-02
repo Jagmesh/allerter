@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"tg-alerter/bot"
-	"tg-alerter/logger"
+	"tg-alerter/internal/bot"
+	"tg-alerter/internal/logger"
 
 	"github.com/joho/godotenv"
 )

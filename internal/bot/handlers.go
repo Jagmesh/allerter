@@ -3,8 +3,9 @@ package bot
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
-	"tg-alerter/logger"
+	"tg-alerter/internal/logger"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -16,8 +17,7 @@ func (b *Bot) HandleUpdate(update tgbotapi.Update) {
 	}
 	logger.GetLogger().Infoln("Command recieved:", command)
 
-	switch command {
-	case COMMAND_ALL_PREFIX:
+	if slices.Contains(COMMAND_ALL_PREFIX, command) {
 		b.handleAllCommand(payload, update)
 	}
 }
