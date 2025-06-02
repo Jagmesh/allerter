@@ -23,7 +23,7 @@ func (b *Bot) HandleUpdate(update tgbotapi.Update) {
 }
 
 func getCommand(input string) (string, string) {
-	re := regexp.MustCompile(`^[/@](\w+)\s*(.*)`)
+	re := regexp.MustCompile(`(?s)^[/@](\w+)\s*(.*)`)
 	match := re.FindStringSubmatch(input)
 	if len(match) > 2 {
 		return strings.ToLower(match[1]), strings.TrimSpace(match[2])
