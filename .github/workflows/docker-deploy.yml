@@ -8,7 +8,7 @@ jobs:
   deploy:
     uses: jagmesh/ci-cd/.github/workflows/docker-deploy.yml@main
     with:
-      image_name: cr.selcloud.ru/jagmesh-vm/allerter
+      image_name: nebula-reg.registry.twcstorage.ru/allerter
       container_name: allerter
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
